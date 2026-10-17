@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, ChevronRight, RotateCcw, CheckCircle, Flame, Clock, Flag } from 'lucide-react';
+import { BarChart3, ChevronRight, CircleHelp, RotateCcw, CheckCircle, Flame, Clock, Flag } from 'lucide-react';
 
 const STORAGE_KEY = 'numerologyStats';
 const MAX_RESETS = 2;
@@ -260,6 +260,73 @@ function Confetti() {
     </div>
   );
 }
+
+function HowToPlay({ onClose }) {
+  const steps = [
+    'You get a start number and a target number.',
+    'Tap rules to transform the start number, one step at a time.',
+    'Reach the target in exactly the number of steps shown in the puzzle to win.',
+    'Finish the puzzle, then tap Next Puzzle to keep going.',
+  ];
+
+  const controls = [
+    ['Undo', 'Removes the last step. You get 5 per puzzle.'],
+    ['Reset', 'Clears the path and starts over. You get 2 per puzzle.'],
+    ['Give Up', 'Shows the solution and resets your current win streak.'],
+  ];
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+      <div className="flex justify-between items-center mb-5">
+        <h2 className="text-2xl font-bold text-slate-800">How to Play</h2>
+        <button
+          onClick={onClose}
+          className="text-slate-500 hover:text-slate-700 text-lg font-bold"
+          aria-label="Close how to play"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="mb-5 pb-5 border-b border-slate-200">
+        <p className="text-xs text-slate-500 uppercase tracking-widest mb-3 font-bold">Goal</p>
+        <ol className="space-y-2 text-sm text-slate-700 list-decimal list-inside">
+          {steps.map((step) => (
+            <li key={step}>{step}</li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mb-5 pb-5 border-b border-slate-200">
+        <p className="text-xs text-slate-500 uppercase tracking-widest mb-3 font-bold">Controls</p>
+        <dl className="space-y-2 text-sm">
+          {controls.map(([name, description]) => (
+            <div key={name}>
+              <dt className="font-bold text-slate-800">{name}</dt>
+              <dd className="text-slate-600">{description}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <div>
+        <p className="text-xs text-slate-500 uppercase tracking-widest mb-3 font-bold">Rules</p>
+        <p className="text-sm text-slate-600 mb-3">
+          Each rule changes the current number. Rules marked with a level unlock as you progress.
+        </p>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          {RULE_KEYS.map((key) => (
+            <div key={key} className="flex justify-between bg-slate-50 border border-slate-200 rounded px-3 py-2">
+              <span className="font-medium text-slate-800">{RULES[key].name}</span>
+              <span className="text-slate-400 text-xs self-center">Lvl {RULES[key].difficulty}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function NumerologyPaths() {
   const [difficulty] = useState(1);
   const [puzzle, setPuzzle] = useState(() => generatePuzzle(1));
@@ -272,6 +339,7 @@ export default function NumerologyPaths() {
   const [usedResetThisPuzzle, setUsedResetThisPuzzle] = useState(false);
   const [stats, setStats] = useState(loadStats);
   const [showStats, setShowStats] = useState(false);
+  const [showHowTo, setShowHowTo] = useState(false);
 
   useEffect(() => {
     if (solved) return undefined;
@@ -384,7 +452,9 @@ export default function NumerologyPaths() {
   return (
     <div className="min-h-screen w-full bg-slate-50 font-sans">
       <div className="mx-auto w-full max-w-md px-3 py-2 sm:py-3">
-        {showStats ? (
+        {showHowTo ? (
+          <HowToPlay onClose={() => setShowHowTo(false)} />
+        ) : showStats ? (
           <StatsPanel
             stats={stats}
             difficulty={difficulty}
@@ -399,14 +469,24 @@ export default function NumerologyPaths() {
                 <h1 className="text-2xl sm:text-4xl font-bold text-slate-800">Numaze</h1>
                 <p className="text-xs sm:text-sm text-slate-500">Find the path. Transform the number.</p>
               </div>
-              <button
-                onClick={() => setShowStats(true)}
-                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded flex-shrink-0 ml-2"
-                aria-label="View statistics"
-                title="View statistics"
-              >
-                <BarChart3 size={18} />
-              </button>
+              <div className="flex gap-2 flex-shrink-0 ml-2">
+                <button
+                  onClick={() => setShowStats(true)}
+                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"
+                  aria-label="View statistics"
+                  title="View statistics"
+                >
+                  <BarChart3 size={18} />
+                </button>
+                <button
+                  onClick={() => setShowHowTo(true)}
+                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded"
+                  aria-label="How to play"
+                  title="How to play"
+                >
+                  <CircleHelp size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Stats Row: icon + value only */}
