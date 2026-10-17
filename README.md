@@ -1,16 +1,101 @@
-# React + Vite
+# NuMaze
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A relaxing number puzzle game. Transform the start number into the target using a chain of rules.
 
-Currently, two official plugins are available:
+## How to Play
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. You're given a **start** number and a **target** number.
+2. Tap rules to transform the start number step by step.
+3. Reach the target using exactly the number of steps in the hidden solution to win.
+4. Finish the puzzle and start the next one.
 
-## React Compiler
+Every puzzle is generated on the fly, so there is never a shortage of levels.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Rules
 
-## Expanding the Oxlint configuration
+| Rule | Effect |
+|------|--------|
+| +5, +7, +10 | Add the number |
+| −3, −7 | Subtract the number |
+| ×2, ×3 | Multiply |
+| ÷2 | Halve (rounded down) |
+| mod 10 | Keep the last digit |
+| Σ digits | Sum of the digits |
+| Reverse | Reverse the digits |
+| # digits | Count the digits |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Rules unlock as levels increase, so early puzzles use only the simpler rules.
+
+## Controls
+
+- **Undo**: removes the last step. You have 5 per puzzle.
+- **Reset**: clears the path and starts over. You have 2 per puzzle.
+- **Give Up**: reveals the solution. This also resets your current win streak.
+
+## Stats and Badges
+
+Stats are saved in your browser's local storage, so they stay between visits.
+
+- Current and longest win streak
+- Best time per level
+- Total wins and perfect wins (solved without a reset)
+
+Badges:
+
+- 🔥 **On Fire**: 10 wins in a row
+- ⚡ **Speed Runner**: solve in under 30 seconds
+- ✨ **Perfect**: solve without using a reset
+- 💥 **Unstoppable**: 25 wins in a row
+- 👑 **Master**: beat your best time 3 times
+- 🏆 **Collector**: earn 5 badges
+
+## Tech Stack
+
+- [React](https://react.dev/) 18+
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide React](https://lucide.dev/) icons
+
+## Getting Started
+
+Requires Node.js 18 or newer.
+
+```bash
+git clone https://github.com/mbalavignesh/numaze.git
+cd numaze
+npm install
+npm run dev
+```
+
+Open http://localhost:5173 in your browser.
+
+## Build and Deploy
+
+```bash
+npm run build
+```
+
+The production files are written to `dist/`. The project is set up for one-click deployment on [Vercel](https://vercel.com/): import the repository, and Vercel detects Vite and uses `npm run build` with `dist` as the output.
+
+## Project Structure
+
+```
+numaze/
+├── index.html
+├── src/
+│   ├── App.jsx        # Game logic and UI
+│   ├── index.css      # Tailwind import and global styles
+│   └── main.jsx       # Entry point
+├── vite.config.js
+└── package.json
+```
+
+## Roadmap
+
+- Automatic level progression
+- Daily challenge
+- Share card for results
+
+## License
+
+This project is currently unlicensed. All rights reserved by the author.
