@@ -355,6 +355,15 @@ export default function NumerologyPaths() {
   }
   const currentNum = pathValues.length ? pathValues[pathValues.length - 1] : puzzle.start;
   const isCorrect = currentNum === puzzle.target && playerPath.length === puzzle.solution.length;
+    const gaveUp = solved && !isCorrect;
+  const displayPath = gaveUp ? puzzle.solution : playerPath;
+  const displayValues = [];
+  let displayRunning = puzzle.start;
+  for (const ruleKey of displayPath) {
+    displayRunning = RULES[ruleKey].apply(displayRunning);
+    displayValues.push(displayRunning);
+  }
+  const displayCurrent = displayValues.length ? displayValues[displayValues.length - 1] : puzzle.start;
   const currentStreak = stats.streaks?.[difficulty] ?? 0;
   const bestTime = stats.bestTimes?.[difficulty];
 
@@ -434,8 +443,7 @@ export default function NumerologyPaths() {
   const giveUp = () => {
     if (solved) return;
     setSolved(true);
-    setFeedback(`Solution: ${puzzle.solution.map((r) => RULES[r].name).join(' → ')}`);
-
+    setFeedback('');
     const next = { ...stats, streaks: { ...stats.streaks, [difficulty]: 0 } };
     setStats(next);
     saveStats(next);
@@ -520,7 +528,11 @@ export default function NumerologyPaths() {
             {/* Puzzle Card */}
             <div
               className={`rounded-xl shadow-sm border p-4 sm:p-6 mb-3 transition-colors duration-500 ${
-                solved && isCorrect ? 'bg-green-50 border-green-200' : 'bg-white border-slate-200'
+                solved && isCorrect
+                  ? 'bg-green-50 border-green-200'
+                  : gaveUp
+                  ? 'bg-red-50 border-red-200'
+                  : 'bg-white border-slate-200'
               }`}
             >
               <div className="text-center mb-4">
@@ -529,21 +541,21 @@ export default function NumerologyPaths() {
               </div>
 
               {/* Path: one horizontal row, fixed height */}
-              <div className="h-12 mb-4 flex items-center justify-center gap-2 overflow-x-auto whitespace-nowrap">
-                {playerPath.length === 0 && (
+              <div className="h-12 mb-4 flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+                {displayPath.length === 0 && (
                   <span className="text-sm text-slate-400">Pick a rule to begin</span>
                 )}
-                {playerPath.map((ruleKey, idx) => (
+                {displayPath.map((ruleKey, idx) => (
                   <div
                     key={idx}
-                    className="flex-shrink-0 flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-full pl-1 pr-3 py-1"
+                    className="flex-shrink-0 flex items-center gap-1.5 bg-white border border-slate-200 rounded-full pl-1 pr-3 py-1"
                   >
-                    <span className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs font-bold text-slate-500">
+                    <span className="w-6 h-6 rounded-full bg-slate-50 flex items-center justify-center text-xs font-bold text-slate-500">
                       {idx + 1}
                     </span>
                     <span className="text-xs font-medium text-blue-700">{RULES[ruleKey].name}</span>
                     <ChevronRight size={12} className="text-slate-400" />
-                    <span className="font-mono font-bold text-slate-700">{pathValues[idx]}</span>
+                    <span className="font-mono font-bold text-slate-700">{displayValues[idx]}</span>
                   </div>
                 ))}
               </div>
@@ -553,10 +565,10 @@ export default function NumerologyPaths() {
                   <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Current</p>
                   <p
                     className={`font-mono text-3xl sm:text-4xl font-bold ${
-                      isCorrect ? 'text-green-600' : 'text-slate-800'
+                      isCorrect ? 'text-green-600' : gaveUp ? 'text-red-600' : 'text-slate-800'
                     }`}
                   >
-                    {currentNum}
+                    {displayCurrent}
                   </p>
                 </div>
                 <div>
